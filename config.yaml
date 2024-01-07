@@ -1,0 +1,23 @@
+listen:
+  address: 0.0.0.0
+  port: 8080
+logs:
+  target: /dev/stdout
+  level: debug
+  format: json
+repositories:
+  - prefix: "rocks"
+    storage: test
+    allow_rewrite: true
+    allowed_file_extensions:
+      - ".rockspec"
+      - ".src.rock"
+      - ".all.rock"
+
+storages:
+  test:
+    type: fs
+    dir: .src
+
+
+
