@@ -17,6 +17,18 @@ func StartCommand() *cli.Command {
 		Name:                   "serve",
 		Usage:                  "mountain serve",
 		Description:            "starts a rocks server",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "address",
+				Category:    "http",
+				Usage:       "--address 0.0.0.0",
+			},
+			&cli.StringFlag{
+				Name:        "port",
+				Category:    "http",
+				Usage:       "--port 2023",
+			},
+		},
 		Category:               "",
 		Action:                 startRocksServer,
 	}
@@ -55,12 +67,25 @@ func startRocksServer(c *cli.Context) error {
 		)
 	}
 
-	address := fmt.Sprintf("%s:%s", cfg.Listen.Address, cfg.Listen.Port)
-	logging.DefaultLogger.Info("starting mountain on",
-		slog.String("address", address),
+	var (
+		address = c.String("address")
+		port  = c.String("port")
 	)
 
-	if err := srv.Start(address); err != nil {
+	if address == "" {
+		address = cfg.Listen.Address
+	}
+
+	if port == "" {
+		port = cfg.Listen.Port
+	}
+
+	bindAddress := fmt.Sprintf("%s:%s", address, port)
+	logging.DefaultLogger.Info("starting mountain on",
+		slog.String("address", bindAddress),
+	)
+
+	if err := srv.Start(bindAddress); err != nil {
 		return err
 	}
 
