@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -47,8 +48,8 @@ func (r *Repository) Put(eCtx echo.Context) error {
 		}
 	}
 
-	body := eCtx.Request().Body
-	defer body.Close()
+	body := io.LimitReader(eCtx.Request().Body, req.ContentLength)
+	defer eCtx.Request().Body.Close()
 
 	if err := r.Storage.Put(ctx, filename, body); err != nil {
 		r.logger.ErrorContext(ctx, "storage.Put err",
