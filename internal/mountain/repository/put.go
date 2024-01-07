@@ -52,7 +52,7 @@ func (r *Repository) Put(eCtx echo.Context) error {
 	defer eCtx.Request().Body.Close()
 
 	if err := r.Storage.Put(ctx, filename, body); err != nil {
-		r.logger.ErrorContext(ctx, "storage.Put err",
+		r.logger.ErrorContext(ctx, "storage.Put() err",
 			slog.String("err", err.Error()),
 			slog.String("filename", filename),
 		)
