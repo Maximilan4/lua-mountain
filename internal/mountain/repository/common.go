@@ -45,7 +45,7 @@ func New(cfg *Config, storage storage.Storage, logger *slog.Logger) *Repository 
 	}
 
 	if repo.AllowedFileExtensions == nil {
-		repo.AllowedFileExtensions = []string{".rockspec", ".src.rock", ".all.rock"}
+		repo.AllowedFileExtensions = []string{".rockspec", "rock"}
 	}
 
 	repo.logger.Info("repo created",

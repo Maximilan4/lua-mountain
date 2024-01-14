@@ -51,6 +51,12 @@ func startRocksServer(c *cli.Context) error {
 		repo := repository.New(&repoCfg, st, logging.DefaultLogger)
 		extMw := mw.AllowedExtensions(repo.AllowedFileExtensions)
 		rGroup := srv.Group(repoCfg.Prefix)
+		for _, man := range []string{"manifest", "manifest-5.1", "manifest-5.2", "manifest-5.3", "manifest-5.4"} {
+			rGroup.GET("/" + man, repo.GetManifest)
+			rGroup.GET("/" + man + ".json", repo.GetManifestJson)
+			rGroup.GET("/" + man + ".zip", repo.GetManifestZip)
+		}
+
 		rGroup.GET("/:filename", repo.Get, extMw)
 		rGroup.PUT("/:filename", repo.Put, extMw)
 		rGroup.DELETE("/:filename", repo.Delete, extMw)

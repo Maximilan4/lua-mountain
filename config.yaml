@@ -11,8 +11,7 @@ repositories:
     allow_rewrite: true
     allowed_file_extensions:
       - ".rockspec"
-      - ".src.rock"
-      - ".all.rock"
+      - "rock"
 
 storages:
   test:
