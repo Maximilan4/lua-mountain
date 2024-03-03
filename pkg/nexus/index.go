@@ -1,8 +1,9 @@
 package nexus
 
 import (
-	"golang.org/x/exp/maps"
 	"sync"
+
+	"golang.org/x/exp/maps"
 )
 
 type (
@@ -11,6 +12,13 @@ type (
 		assets map[string]Asset
 	}
 )
+
+func (ai *AssetIndex) Count() int {
+	ai.mut.RLock()
+	defer ai.mut.RUnlock()
+
+	return len(ai.assets)
+}
 
 // Delete - deletes an Asset from index
 func (ai *AssetIndex) Delete(key string) {
@@ -24,6 +32,12 @@ func (ai *AssetIndex) Store(key string, a Asset) {
 	ai.mut.Lock()
 	defer ai.mut.Unlock()
 	ai.assets[key] = a
+}
+
+func (ai *AssetIndex) Replace(m map[string]Asset) {
+	ai.mut.Lock()
+	defer ai.mut.Unlock()
+	ai.assets = m
 }
 
 // Keys - returns a list with all stored assets keys

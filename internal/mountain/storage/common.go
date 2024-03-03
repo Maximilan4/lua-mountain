@@ -4,12 +4,8 @@ import (
 	"context"
 	"io"
 	"log/slog"
-	"lua-mountain/pkg/attr"
-	"lua-mountain/pkg/filesystem"
-)
 
-const (
-	DefaultStorageDir = "/var/mountain"
+	"lua-mountain/pkg/attr"
 )
 
 type (
@@ -24,23 +20,22 @@ type (
 	Storages map[string]Storage
 )
 
-
-func InitStorages(cfg map[string]any, logger *slog.Logger) Storages {
+func InitStorages(ctx context.Context, cfg map[string]any, logger *slog.Logger) Storages {
 	var (
 		storages = make(Storages, len(cfg))
-		err error
+		err      error
 	)
 
 	for name, storageCfg := range cfg {
 		switch storageCfg := storageCfg.(type) {
 		case map[string]any:
 			var (
-				t string
+				t  string
 				ok bool
 			)
 
 			if t, ok = attr.GetTyped[string](storageCfg, "type"); !ok {
-				slog.Warn("skip storage init: bad type", slog.String("name", name))
+				logger.Warn("skip storage init: bad type", slog.String("name", name))
 				continue
 			}
 
@@ -49,33 +44,24 @@ func InitStorages(cfg map[string]any, logger *slog.Logger) Storages {
 				storages[name], err = InitFsStorage(name, storageCfg, logger)
 				if err != nil {
 					delete(storages, name)
-					slog.Error("storage initialization err", slog.String("err", err.Error()))
+					logger.Error("storage initialization err", slog.String("err", err.Error()))
 					continue
 				}
-
+			case "nexus":
+				storages[name], err = InitNexusStorage(ctx, name, storageCfg, logger)
+				if err != nil {
+					delete(storages, name)
+					logger.Error("storage initialization err", slog.String("err", err.Error()))
+					continue
+				}
+			default:
+				logger.Warn("skip storage init: unexpected type", slog.String("type", t))
 			}
 
-
 		default:
-			slog.Warn("skip storage init: bad configuration", slog.String("name", name))
+			logger.Warn("skip storage init: bad configuration", slog.String("name", name))
 		}
 	}
 
 	return storages
-}
-
-func InitFsStorage(name string, cfg map[string]any, logger *slog.Logger) (*filesystem.Storage, error ){
-	var (
-		sCfg = filesystem.StorageConfig{}
-		ok bool
-	)
-
-	sCfg.Dir, ok = attr.GetTyped[string](cfg, "dir")
-	if !ok {
-		sCfg.Dir = DefaultStorageDir
-	}
-	sCfg.Logger = logger.With(slog.String("storage", name), slog.String("dir", sCfg.Dir))
-	sCfg.Logger.Info("loading new fs storage")
-
-	return filesystem.NewStorage(filesystem.WithStorageConfig(&sCfg))
 }

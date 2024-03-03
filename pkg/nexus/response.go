@@ -5,16 +5,16 @@ import (
 	"io"
 )
 
-func convertResponse[T any](r io.Reader) (*T, error) {
+func jsonTo[T any](r io.Reader) (*T, error) {
 	var (
-		model T
-		d     = json.NewDecoder(r)
+		o T
+		d = json.NewDecoder(r)
 	)
 
-	err := d.Decode(&model)
+	err := d.Decode(&o)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model, nil
+	return &o, nil
 }

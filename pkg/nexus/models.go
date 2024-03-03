@@ -39,4 +39,18 @@ type (
 		Items []Asset `json:"items"`
 		Next  string  `json:"continuationToken"`
 	}
+
+	SearchItem struct {
+		Id         string  `json:"id"`
+		Repository string  `json:"repository"`
+		Format     string  `json:"format"`
+		Group      string  `json:"group"`
+		Name       string  `json:"name"`
+		Version    *string `json:"version"`
+		Assets     []Asset `json:"assets"`
+	}
+	SearchList struct {
+		Items             []SearchItem `json:"items"`
+		ContinuationToken string       `json:"continuationToken"`
+	}
 )
