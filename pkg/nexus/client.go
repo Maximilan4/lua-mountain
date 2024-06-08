@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"lua-mountain/pkg/slogan"
 	"net/http"
 	"net/url"
 	"time"
@@ -189,7 +190,7 @@ func (hc *HTTPClient) doRequest(ctx context.Context, req *http.Request) (*http.R
 
 	hc.logger.DebugContext(ctx, "http request end",
 		slog.String("method", req.Method),
-		slog.String("addr", req.URL.String()),
+		slogan.SanitizedURL("addr", req.URL),
 		slog.String("status", resp.Status),
 		slog.Duration("dur", time.Since(start)),
 	)

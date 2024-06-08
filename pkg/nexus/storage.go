@@ -15,6 +15,7 @@ import (
 
 const (
 	DefaultIndexUpdateInterval = time.Minute
+	maxAssetSearchRetry = 5
 )
 
 type (
@@ -179,17 +180,37 @@ func (s *Storage) Put(ctx context.Context, filename string, r io.Reader) (err er
 		return
 	}
 
-	var l *SearchList
-	// TODO: some retry here, or in separate goroutine
-	l, err = s.Client.SearchAssetByName(ctx, s.cfg.RepositoryName, filename, "")
-	if err != nil {
-		err = fmt.Errorf("storage.Put() - unable to search saved asset: %w", err)
-		return
-	}
+	var (
+		l *SearchList
+		delay time.Duration
+		retry int
+	)
 
-	if len(l.Items) == 0 || len(l.Items[0].Assets) == 0 {
-		err = errors.New("storage.Put() - empty search response")
-		return
+	for retry < maxAssetSearchRetry {
+		delay = time.Duration(float64(time.Second) * 0.1 * float64(retry))
+		time.Sleep(delay)
+		l, err = s.Client.SearchAssetByName(ctx, s.cfg.RepositoryName, filename, "")
+		if err != nil {
+			err = fmt.Errorf("storage.Put() - unable to search saved asset: %w", err)
+			return
+		}
+
+		if len(l.Items) == 0 || len(l.Items[0].Assets) == 0 {
+			s.logger.DebugContext(ctx, "uploaded asset not found",
+				slog.String("asset", filename),
+				slog.Int("attempt", retry + 1),
+				slog.Duration("delay", delay),
+			)
+			retry++
+			continue
+		} else {
+			s.logger.DebugContext(ctx, "uploaded asset found",
+				slog.String("asset", filename),
+				slog.Int("attempt", retry + 1),
+				slog.Duration("delay", delay),
+			)
+			break
+		}
 	}
 
 	asset := l.Items[0].Assets[0]
