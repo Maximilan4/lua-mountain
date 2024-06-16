@@ -101,3 +101,5 @@ fabric.properties
 go.work
 
 .src
+*.sh
+.DS_Store
