@@ -1,0 +1,19 @@
+# Version for this file.
+version: 1
+
+# (Optional) List of env variables used during compilation.
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=0
+
+# (Optional) Flags for the compiler.
+flags:
+  - -trimpath
+  - -tags=netgo
+goos: darwin
+goarch: amd64
+main: cmd/mountain/main.go
+binary: mountain-{{ .Os }}-{{ .Arch }}
+# (Optional) ldflags generated dynamically in the workflow, and set as the `evaluated-envs` input variables in the workflow.
+ldflags:
+  - "-X main.version={{ .Env.VERSION }}"

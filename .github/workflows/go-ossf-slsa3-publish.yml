@@ -42,7 +42,7 @@ jobs:
     with:
       go-version: 1.22
       upload-tag-name: true
-      config-file: .slsa-goreleaser/${{matrix.os}}-${{matrix.arch}}.yml
+      config-file: .github/workflows/slsa-config/${{matrix.os}}-${{matrix.arch}}.yml
       # =============================================================================================================
       #     Optional: For more options, see https://github.com/slsa-framework/slsa-github-generator#golang-projects
       # =============================================================================================================
