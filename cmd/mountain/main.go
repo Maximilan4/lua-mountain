@@ -2,15 +2,20 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"lua-mountain/internal/mountain"
 	"os"
+
+	"lua-mountain/internal/mountain"
 )
 
-
+var (
+	version = "dev"
+)
 
 func main() {
 	ctx := context.Background()
+	fmt.Println(version)
 	if err := mountain.Start(ctx, os.Args); err != nil {
 		log.Fatal(err)
 	}

@@ -2,12 +2,14 @@ package mountain
 
 import (
 	"context"
-	"github.com/urfave/cli/v2"
 	"log/slog"
+	"os"
+
+	"github.com/urfave/cli/v2"
+
 	"lua-mountain/internal/mountain/commands"
 	"lua-mountain/internal/mountain/config"
 	"lua-mountain/internal/mountain/logging"
-	"os"
 )
 
 var Engine *cli.App
@@ -18,16 +20,17 @@ func init() {
 		Usage: "mountain",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:        "config",
-				Usage:       "--config=config.yaml",
-				Required:    false,
+				Name:     "config",
+				Usage:    "--config=config.yaml",
+				Required: false,
 			},
 		},
 		Commands: []*cli.Command{
 			commands.StartCommand(),
+			commands.VersionCommand(),
 		},
-		Before: onBefore,
-		Action: cli.ShowAppHelp,
+		Before:       onBefore,
+		Action:       cli.ShowAppHelp,
 		BashComplete: cli.DefaultAppComplete,
 		Reader:       os.Stdin,
 		Writer:       os.Stdout,
@@ -71,4 +74,3 @@ func onBefore(c *cli.Context) error {
 
 	return nil
 }
-
