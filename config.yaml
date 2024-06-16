@@ -7,22 +7,23 @@ logs:
   format: json
 repositories:
   - prefix: "rocks"
-    storage: nexus
+    storage: fs
     allow_rewrite: true
     allowed_file_extensions:
       - ".rockspec"
       - "rock"
 
 storages:
-  test:
+  fs:
     type: fs
     dir: .src
-  nexus:
-    type: nexus
-    address: http://admin:admin@localhost:8081/
-    repository: rocks
-    index_update_interval: 15s
-    request_timeout: 1s
+# nexus storage configuration for communicating by default
+#  nexus:
+#    type: nexus
+#    address: http://admin:admin@localhost:8081/
+#    repository: rocks
+#    index_update_interval: 15s
+#    request_timeout: 1s
 
 
 

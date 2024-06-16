@@ -10,7 +10,7 @@ env:
 flags:
   - -trimpath
   - -tags=netgo
-goos: linux
+goos: darwin
 goarch: arm64
 main: cmd/mountain/main.go
 binary: mountain-{{ .Os }}-{{ .Arch }}

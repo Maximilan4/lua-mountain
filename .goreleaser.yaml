@@ -1,0 +1,43 @@
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/mountain
+
+archives:
+  - builds:
+      - default
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+nfpms:
+  - package_name: lua-mountain
+    vendor: Max Maximov
+    maintainer: Max Maximov
+    formats:
+      - rpm
+      - deb
+      - apk
+    bindir: /usr/bin
+    version_metadata: git
+    license: MIT
+    file_name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    contents:
+      - src: config.yaml
+        dst: /etc/mountain/config.yaml
+        type: "config|noreplace"
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
