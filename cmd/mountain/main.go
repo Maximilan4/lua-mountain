@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -15,7 +14,7 @@ var (
 
 func main() {
 	ctx := context.Background()
-	fmt.Println(version)
+	mountain.Engine.Version = version
 	if err := mountain.Start(ctx, os.Args); err != nil {
 		log.Fatal(err)
 	}
